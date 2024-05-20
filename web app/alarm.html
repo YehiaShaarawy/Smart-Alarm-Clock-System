@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Alarm</title>
+        <link rel="stylesheet" href="sss.css" />
+    </head>
+    <body>
+        <div class="alarm">
+            <label for="alarmTime" id="alarmlabel">Set Alarm Time:</label>
+            <input type="time" id="alarmTime" required />
+            <button id="startBtn" onclick="setAlarm()">Set Alarm</button>
+            <button
+                id="stopAlarmBtn"
+                onclick="stopAlarm()"
+                style="display: none"
+            >
+                Stop Alarm
+            </button>
+        </div>
+        <div id="messages"></div>
+        <audio id="alarmSound" src="alarm_sound.mp3"></audio>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.2.7/mqtt.min.js"></script>
+        <script>
+            let alarmTime;
+            let alarmInterval;
+
+            // Connect to the MQTT broker
+            const client = mqtt.connect("ws://broker.emqx.io:8083/mqtt", {
+                username: "brokeralarm",
+                password: "brokeralarm",
+            });
+
+            // On successful connection
+            client.on("connect", function () {
+                console.log("Connected to MQTT broker");
+                client.subscribe("alarmesp32");
+            });
+
+            function setAlarm() {
+                const alarmInput = document.getElementById("alarmTime");
+                alarmTime = alarmInput.value;
+                if (alarmTime) {
+                    const currentTime = new Date();
+                    const alarm = new Date(
+                        currentTime.getFullYear(),
+                        currentTime.getMonth(),
+                        currentTime.getDate(),
+                        alarmTime.split(":")[0],
+                        alarmTime.split(":")[1]
+                    );
+                    const timeToAlarm = alarm - currentTime;
+                    if (timeToAlarm >= 0) {
+                        // Publish alarm time to MQTT broker
+                        client.publish("alarmesp32", `Alarm set for ${alarmTime}`, { qos: 1 }, function (err) {
+                            if (err) {
+                                console.error("Error publishing alarm time:", err);
+                            } 
+                        });
+
+                        // Set interval to check the time every second
+                        alarmInterval = setInterval(checkAlarmTime, 1000);
+                        document.getElementById("stopAlarmBtn").style.display = "inline-block"; // Show stop alarm button
+                        alarmInput.disabled = true; // Disable alarm time input
+                        alarmInput.value = ""; // Clear input after setting alarm
+                       
+                    } else {
+                        alert("Please select a future time for the alarm.");
+                    }
+                } else {
+                    alert("Please select a time for the alarm.");
+                }
+            }
+
+            function checkAlarmTime() {
+                const currentTime = new Date();
+                const currentHours = currentTime.getHours().toString().padStart(2, '0');
+                const currentMinutes = currentTime.getMinutes().toString().padStart(2, '0');
+                const currentFormattedTime = `${currentHours}:${currentMinutes}`;
+
+                if (currentFormattedTime === alarmTime) {
+                    client.publish("alarmesp32", "BUZZ", { qos: 1 }, function (err) {
+                        if (err) {
+                            console.error("Error publishing message:", err);
+                        } 
+                        
+                    });
+                    clearInterval(alarmInterval); // Clear interval after alarm triggers
+                    
+                }
+            }
+
+            function stopAlarm() {
+                clearInterval(alarmInterval); // Stop checking the time
+                client.publish("alarmesp32", "stop"); // Publish stop alarm message to MQTT broker
+                document.getElementById("alarmTime").disabled = false; // Enable alarm time input
+                document.getElementById("stopAlarmBtn").style.display = "none";
+                displayMessage("Alarm stopped");
+            }
+
+            client.on("message", function (topic, message) {
+                const msg = message.toString();
+               
+            });
+
+            function displayMessage(message) {
+                const messagesDiv = document.getElementById("messages");
+                const messageElement = document.createElement("p");
+                messageElement.textContent = message;
+                messagesDiv.appendChild(messageElement);
+            }
+        </script>
+    </body>
+</html>
+

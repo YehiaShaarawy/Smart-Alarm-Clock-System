@@ -1,0 +1,96 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+
+    background-image: url("ww.jpg");
+
+    background-size: cover;
+}
+
+.stopwatch {
+    text-align: center;
+}
+
+#display {
+    font-size: 100px;
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+    border: 1px solid black;
+    font-weight: bolder;
+    font-size: 100px;
+}
+
+#resetBtn,
+#stopBtn,
+#startBtn {
+    margin-right: 10px;
+    font-weight: bolder;
+    font-size: 100px;
+    background-color: rgb(218, 147, 161);
+}
+#a {
+    margin-right: 10px;
+    font-weight: bolder;
+    font-size: 100px;
+    background-color: rgb(250, 238, 240);
+}
+#alarmlabel {
+    margin-right: 10px;
+    font-weight: bolder;
+    font-size: 100px;
+}
+#alarmTime {
+    margin-right: 10px;
+    font-weight: bolder;
+    font-size: 100px;
+}
+#resetBtn:hover,
+#stopBtn:hover,
+#startBtn:hover,
+#a:hover {
+    background-color: rgb(174, 62, 100);
+    color: rgb(228, 229, 215);
+}
+.wall {
+    background-size: contain;
+}
+.alarm {
+    text-align: center;
+    margin-bottom: 10px;
+}
+.timer,
+.timerb {
+    font-weight: bolder;
+    font-size: 40px;
+    background-color: rgb(236, 151, 189);
+    color: rgb(19, 14, 19);
+}
+.timerb:hover {
+    background-color: rgb(81, 13, 35);
+    color: rgb(228, 229, 215);
+}
+#timerInput {
+    font-weight: bolder;
+    font-size: 20px;
+
+    color: rgb(19, 14, 19);
+}
+#clockDisplay {
+    font-weight: bolder;
+    font-size: 90px;
+
+    color: rgb(19, 14, 19);
+}
+.bhome {
+    font-weight: bolder;
+    font-size: 40px;
+    background-color: rgb(236, 151, 189);
+    color: rgb(19, 14, 19);
+}

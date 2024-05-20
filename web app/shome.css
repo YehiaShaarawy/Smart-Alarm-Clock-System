@@ -1,0 +1,83 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+    background-image: url("home.webp");
+    background-size: cover;
+  }
+  
+  .container {
+    text-align: center;
+  }
+  
+  h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+  
+  .buttons {
+    margin-top: 20px;
+  }
+  
+  .bhome {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 40px;
+    cursor: pointer;
+    background-color: #ff00cc;
+    color: #fff;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #b48797;
+  }
+  
+  .animations {
+    display: flex;
+  
+    margin-top: 50px;
+  }
+  
+  .clock-animation,
+  .stopwatch-animation {
+    width: 200px;
+    height: 200px;
+    
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    color: #ff00cc;
+  }
+  .clock-animation {
+    animation-name: moveUpDownClock;
+    margin-left:500px ;
+    margin-right: 250px;
+  }
+  .stopwatch-animation {
+    animation-name: moveUpDownStopwatch;
+  
+  }
+  @keyframes moveUpDownClock {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+  
+  @keyframes moveUpDownStopwatch {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(20px);
+    }
+  }
+  
+  

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  
+    <link rel="stylesheet" href="socialicons.css" />
+    <link rel="stylesheet" href="toggleButton.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIGHT DETECTION </title>
+    <style>
+        body {
+            background-color: #333; /* Default dark background */
+            color: white;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.5s, color 0.5s;
+            overflow: hidden; /* Hide overflow to prevent scroll bars */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Use full viewport height */
+            margin: 0; /* Remove default margin */
+        }
+        .light {
+            background-color: #87CEEB; /* Light blue sky background */
+            color: #333; /* Dark text for readability */
+        }
+        .moon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
+            background-color: #f0f0f0; /* Moon color */
+            border-radius: 50%; /* Circle shape */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); /* Glow effect */
+            z-index: 1; /* Moon on top of other elements */
+        }
+        .star {
+            position: absolute;
+            top: 50px;
+            left: 150px;
+            width: 10px;
+            height: 10px;
+            background-color: #fff; /* Star color */
+            border-radius: 50%; /* Circle shape */
+            animation: twinkle 1.5s infinite alternate; /* Twinkle animation */
+            z-index: 1; /* Stars on top of other elements */
+        }
+        @keyframes twinkle {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .sun {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
+            background-color: #FFD700; /* Sun color */
+            border-radius: 50%; /* Circle shape */
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); /* Glow effect */
+            z-index: 1; /* Sun on top of other elements */
+        }
+    </style>
+</head>
+<body>
+    <div class="moon"></div>
+    <div class="star"></div>
+    <div class="star" style="top: 100px; left: 250px;"></div>
+    <!-- More stars can be added similarly -->
+    <div class="sun"></div>
+     
+    <h1>LIGHT DETECTION</h1>
+    <p id="datetime"></p>
+    <div id="message"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.2.7/mqtt.min.js"></script>
+    <script>
+        // Connect to the MQTT broker
+        const client = mqtt.connect('ws://broker.emqx.io:8083/mqtt', {
+            username: 'brokeralarm',
+            password: 'brokeralarm'
+        });
+
+        // On successful connection
+        client.on('connect', function () {
+            console.log('Connected to MQTT broker');
+            client.subscribe('SUNRISE');
+        });
+
+        // On receiving a message
+        client.on('message', function (topic, message) {
+            const statusElement = document.getElementById("message");
+            const lightStatus = message.toString().trim();
+
+            if (lightStatus === "ON") {
+                statusElement.textContent = "Light Detected!";
+                document.body.classList.remove('dark');
+                document.body.classList.add('light');
+            } else if (lightStatus === "OFF") {
+                statusElement.textContent = "No Light Detected";
+                document.body.classList.remove('light');
+                document.body.classList.add('dark');
+            } else {
+                statusElement.textContent = "Unknown status";
+            }
+        });
+    </script>
+</body>
+</html>
+<body >
+
+
+</body>
+
+</html>

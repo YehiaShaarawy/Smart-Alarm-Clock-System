@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Stopwatch with MQTT</title>
+        <link rel="stylesheet" href="sss.css" />
+    </head>
+    <body>
+        <div class="stopwatch">
+            <div id="display">00:00:00</div>
+            <button id="startBtn" onclick="startStopwatch()">Start</button>
+            <button id="stopBtn" onclick="stopStopwatch()" disabled>
+                Pause
+            </button>
+            <button id="resetBtn" onclick="resetStopwatch()">Reset</button>
+            <a href="homepage.html" id="resetBtn" onclick="BACK()">BACK</a>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.2.7/mqtt.min.js"></script>
+        <script>
+            // Connect to the MQTT broker
+            const client = mqtt.connect("ws://broker.emqx.io:8083/mqtt", {
+                username: "brokeralarm",
+                password: "brokeralarm",
+            });
+
+            // On successful connection
+            client.on("connect", function () {
+                console.log("Connected to MQTT broker");
+                client.subscribe("alarmesp32");
+                // Enable buttons once MQTT connection is established
+                document
+                    .getElementById("startBtn")
+                    .addEventListener("click", startStopwatch);
+                document
+                    .getElementById("stopBtn")
+                    .addEventListener("click", stopStopwatch);
+                document
+                    .getElementById("resetBtn")
+                    .addEventListener("click", resetStopwatch);
+                document
+                    .getElementById("backBtn")
+                    .addEventListener("click", BACK);
+            });
+
+            // Variables for the stopwatch
+            let timer;
+            let startTime;
+            let running = false;
+            let elapsedTime = 0;
+            let updateTimer;
+
+            function startStopwatch() {
+                if (!running) {
+                    startTime = Date.now() - elapsedTime;
+                    timer = setInterval(updateDisplay, 10);
+                    running = true;
+                    document.getElementById("startBtn").disabled = true;
+                    document.getElementById("stopBtn").disabled = false;
+
+                    client.publish(
+                        "STOPWATCH",
+                        "s",
+                        { qos: 1 },
+                        function (err) {
+                            if (err) {
+                                console.error("Error publishing message:", err);
+                            } else {
+                                console.log("Message published successfully.");
+                            }
+                        },
+                    );
+
+                    // Start updating the MQTT broker every second
+                    updateTimer = setInterval(sendUpdate, 1000);
+                }
+            }
+
+            function stopStopwatch() {
+                if (running) {
+                    clearInterval(timer);
+                    clearInterval(updateTimer);
+                    running = false;
+                    document.getElementById("startBtn").disabled = false;
+                    document.getElementById("stopBtn").disabled = true;
+
+                    client.publish(
+                        "STOPWATCH",
+                        "p",
+                        { qos: 1 },
+                        function (err) {
+                            if (err) {
+                                console.error("Error publishing message:", err);
+                            } else {
+                                console.log("Message published successfully.");
+                                sendUpdate();
+                            }
+                        },
+                    );
+                }
+            }
+
+            function resetStopwatch() {
+                clearInterval(timer);
+                clearInterval(updateTimer);
+                running = false;
+                elapsedTime = 0;
+                document.getElementById("display").textContent = "00:00:00";
+                document.getElementById("startBtn").disabled = false;
+                document.getElementById("stopBtn").disabled = true;
+
+                client.publish("STOPWATCH", "r", { qos: 1 }, function (err) {
+                    if (err) {
+                        console.error("Error publishing message:", err);
+                    } else {
+                        console.log("Message published successfully.");
+                    }
+                });
+            }
+
+            function BACK() {
+                clearInterval(timer);
+                clearInterval(updateTimer);
+                document.getElementById("startBtn").disabled = false;
+                document.getElementById("stopBtn").disabled = true;
+
+                client.publish("STOPWATCH", "BACK", { qos: 1 }, function (err) {
+                    if (err) {
+                        console.error("Error publishing message:", err);
+                    } else {
+                        console.log("Message published successfully.");
+                    }
+                });
+            }
+
+            function updateDisplay() {
+                const currentTime = Date.now();
+                elapsedTime = currentTime - startTime;
+                const formattedTime = formatTime(elapsedTime);
+                document.getElementById("display").textContent = formattedTime;
+            }
+
+            function formatTime(milliseconds) {
+                const totalSeconds = Math.floor(milliseconds / 1000);
+                const minutes = Math.floor(totalSeconds / 60)
+                    .toString()
+                    .padStart(2, "0");
+                const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+                const centiseconds = Math.floor((milliseconds % 1000) / 10)
+                    .toString()
+                    .padStart(2, "0");
+                return `${minutes}:${seconds}:${centiseconds}`;
+            }
+
+            function sendUpdate() {
+                const currentTime = formatTime(elapsedTime);
+                client.publish(
+                    "STOPWATCH",
+                    currentTime,
+                    { qos: 1 },
+                    function (err) {
+                        if (err) {
+                            console.error("Error publishing update:", err);
+                        } else {
+                            console.log(
+                                "Update sent successfully:",
+                                currentTime,
+                            );
+                        }
+                    },
+                );
+            }
+        </script>
+    </body>
+</html>

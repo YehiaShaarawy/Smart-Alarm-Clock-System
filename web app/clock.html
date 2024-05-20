@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clock</title>
+  <link rel="stylesheet" href="sss.css">
+</head>
+<body>
+  <div class="clock">
+    <div id="clockDisplay" class="clock-display">00:00:00</div>
+  </div>
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.2.7/mqtt.min.js"></script>
+  <script>
+
+           // Connect to the MQTT broker
+           const client = mqtt.connect('ws://broker.emqx.io:8083/mqtt', {
+            username: 'brokeralarm',
+            password: 'brokeralarm'
+        });
+
+        // On successful connection
+        client.on('connect', function () {
+            console.log('Connected to MQTT broker');
+            client.subscribe('CLOCK');
+        });
+
+client.on("message", function (topic, message) {
+  if (topic === "CLOCK") {
+    const timeString = message.toString();
+    updateClock(timeString); // Update the clock with received time
+  }
+});
+
+function updateClock(timeString) {
+  document.getElementById('clockDisplay').textContent = timeString;
+}
+
+// Update clock display every second
+setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
