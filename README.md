@@ -17,6 +17,11 @@ more effective and pleasant waking experience.
 4. LCD Screen
 5. LDR Sensor
 6. Buzzer
+7. 1 kohm resistor
+
+## Schematic:
+![schematic](https://github.com/YehiaSharawy/Smart-Alarm-Clock-System/assets/65984199/593cf816-0bb5-4ddd-bc68-dc8ad831050a)
+
 
 ## Communication between Hardware and Software:
 1. IOT Protocol & Broker: MQTT
