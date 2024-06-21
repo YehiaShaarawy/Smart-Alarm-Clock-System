@@ -6,7 +6,8 @@ appointments and disrupted routines. A smart alarm
 clock that integrates with the environment can offer a
 more effective and pleasant waking experience.
 
-[poster.pdf](https://github.com/YehiaSharawy/Smart-Alarm-Clock-System/files/15378819/poster.pdf)
+<img width="890" alt="SCR-20240621-pxnq" src="https://github.com/YehiaSharawy/Smart-Alarm-Clock-System/assets/65984199/17136911-b5b5-4455-8ad2-9123a9b67b38">
+
 
 
 ## Hardware Components:
