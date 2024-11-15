@@ -1,4 +1,4 @@
-# Smart-Alarm-Clock-System
+# Smart Alarm Clock System
  Traditional alarm clocks can be disruptive and often fail
 to wake users in a gentle, natural way. Additionally,
 people may forget to set their alarms, leading to missed
